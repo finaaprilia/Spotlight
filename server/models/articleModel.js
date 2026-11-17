@@ -26,6 +26,11 @@ export const ArticleModel = {
         if (limit) q = q.limit(Number(limit));
 
         const { data, error } = await q;
+
+        // TAMBAHKAN INI UNTUK MENGECEK APAKAH ADA ERROR ATAU DATA KOSONG
+        console.log("DATA DARI SUPABASE:", data);
+        console.log("ERROR DARI SUPABASE:", error);
+
         if (error) throw error;
         return data;
     },
