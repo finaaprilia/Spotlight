@@ -3,10 +3,15 @@ import axios from "axios";
 const api = axios.create({ baseURL: "/api", timeout: 30000 });
 
 api.interceptors.response.use(
-    (res) => res.data,
+    (res) => {
+        if (typeof res.data === "string" && res.data.trim().startsWith("<")) {
+            throw new Error("Server mengembalikan halaman HTML. Pastikan endpoint API dan Environment Variables di Vercel sudah benar.");
+        }
+        return res.data;
+    },
     (err) =>
         Promise.reject(
-            new Error(err.response?.data?.error || "Tidak dapat terhubung ke server. Periksa koneksi Anda.")
+            new Error(err.response?.data?.error || err.message || "Tidak dapat terhubung ke server. Periksa koneksi Anda.")
         )
 );
 

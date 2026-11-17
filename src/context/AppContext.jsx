@@ -58,7 +58,9 @@ export function AppProvider({ children }) {
     };
 
     const refreshBookmarks = useCallback(
-        () => BookmarkAPI.list(deviceId).then(setBookmarks).catch(() => { }),
+        () => BookmarkAPI.list(deviceId).then((data) => {
+            if (Array.isArray(data)) setBookmarks(data);
+        }).catch(() => { }),
         [deviceId]
     );
     useEffect(() => {

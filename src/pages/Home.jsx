@@ -9,12 +9,12 @@ export default function Home() {
     const { data, loading, error, reload } = useAsync(() => ArticleAPI.list({ limit: 40 }), []);
 
     const { headline, trending, latest } = useMemo(() => {
-        const all = data || [];
+        const all = Array.isArray(data) ? data : [];
         const byDate = [...all].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         const headline = all.find((a) => a.is_featured) || byDate[0];
         return {
             headline,
-            trending: [...all].sort((a, b) => b.views - a.views).slice(0, 6),
+            trending: [...all].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 6),
             latest: byDate.filter((a) => a.id !== headline?.id).slice(0, 6),
         };
     }, [data]);

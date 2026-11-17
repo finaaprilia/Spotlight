@@ -11,9 +11,9 @@ const app = express();
 // Foto dikompres di browser (sekitar 300 KB), batas 4 MB masih di bawah limit Vercel (4,5 MB)
 app.use(express.json({ limit: "4mb" }));
 
-app.get("/api", (_req, res) => res.json({ name: "Spotlight API", status: "ok" }));
-app.use("/api/articles", articleRoutes);
-app.use("/api/bookmarks", bookmarkRoutes);
-app.use("/api/upload", uploadRoutes);
+app.get(["/", "/api"], (_req, res) => res.json({ name: "Spotlight API", status: "ok" }));
+app.use(["/articles", "/api/articles"], articleRoutes);
+app.use(["/bookmarks", "/api/bookmarks"], bookmarkRoutes);
+app.use(["/upload", "/api/upload"], uploadRoutes);
 
 export default app;
