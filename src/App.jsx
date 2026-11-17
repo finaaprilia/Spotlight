@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { useApp } from "./context/AppContext";
 import BottomNav from "./components/BottomNav";
+import TopNav from "./components/TopNav";
+import OfflineBar from "./components/OfflineBar";
 import Splash from "./components/Splash";
 import Onboarding from "./components/Onboarding";
 import Home from "./pages/Home";
@@ -12,7 +14,6 @@ import Detail from "./pages/Detail";
 
 export default function App() {
   const { onboarded, setOnboarded } = useApp();
-  // Pengguna lama melihat splash, pengguna baru melihat onboarding.
   const [phase, setPhase] = useState(onboarded ? "splash" : "onboarding");
   const { pathname } = useLocation();
 
@@ -27,10 +28,13 @@ export default function App() {
       />
     );
 
-  const hideNav = pathname.startsWith("/berita/");
+  // Bottom nav hanya untuk mobile dan disembunyikan di halaman detail
+  const hideBottom = pathname.startsWith("/berita/");
 
   return (
     <div className="app">
+      <TopNav />
+      <OfflineBar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/berita" element={<News />} />
@@ -42,7 +46,7 @@ export default function App() {
         />
         <Route path="*" element={<Home />} />
       </Routes>
-      {!hideNav && <BottomNav />}
+      {!hideBottom && <BottomNav />}
     </div>
   );
 }

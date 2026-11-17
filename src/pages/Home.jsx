@@ -14,16 +14,17 @@ export default function Home() {
         const headline = all.find((a) => a.is_featured) || byDate[0];
         return {
             headline,
-            trending: [...all].sort((a, b) => b.views - a.views).slice(0, 5),
+            trending: [...all].sort((a, b) => b.views - a.views).slice(0, 6),
             latest: byDate.filter((a) => a.id !== headline?.id).slice(0, 6),
         };
     }, [data]);
 
     const today = new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" });
+    const scrollDown = () => document.getElementById("konten")?.scrollIntoView({ behavior: "smooth" });
 
     return (
         <main className="page">
-            <header className="top">
+            <header className="top top-home">
                 <div>
                     <h1 className="brand">Spotlight</h1>
                     <p className="muted">{today}</p>
@@ -38,25 +39,24 @@ export default function Home() {
 
             {headline && (
                 <>
-                    <section>
-                        <h2 className="sec">Headline</h2>
-                        <HeroCard a={headline} />
-                    </section>
+                    <HeroCard a={headline} onScroll={scrollDown} />
 
-                    <section>
-                        <h2 className="sec">Trending</h2>
-                        <div className="hscroll">
-                            {trending.map((a, i) => <TrendCard key={a.id} a={a} rank={i + 1} />)}
-                        </div>
-                    </section>
+                    <div id="konten" className="stack">
+                        <section>
+                            <h2 className="sec">Trending</h2>
+                            <div className="hscroll">
+                                {trending.map((a, i) => <TrendCard key={a.id} a={a} rank={i + 1} />)}
+                            </div>
+                        </section>
 
-                    <section>
-                        <div className="sec-row">
-                            <h2 className="sec">Terbaru</h2>
-                            <Link to="/berita" className="link">Lihat semua</Link>
-                        </div>
-                        <div className="list">{latest.map((a) => <RowCard key={a.id} a={a} />)}</div>
-                    </section>
+                        <section>
+                            <div className="sec-row">
+                                <h2 className="sec">Terbaru</h2>
+                                <Link to="/berita" className="link">Lihat semua</Link>
+                            </div>
+                            <div className="list">{latest.map((a) => <RowCard key={a.id} a={a} />)}</div>
+                        </section>
+                    </div>
                 </>
             )}
         </main>

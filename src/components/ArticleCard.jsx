@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Eye, Trash2 } from "lucide-react";
+import { ArrowDown, Eye, Trash2 } from "lucide-react";
 import { compact, timeAgo } from "../utils/format";
 
 const Img = ({ src, alt, className }) => (
@@ -7,20 +7,23 @@ const Img = ({ src, alt, className }) => (
         onError={(e) => (e.currentTarget.style.visibility = "hidden")} />
 );
 
-// Kartu utama (headline Beranda)
-export const HeroCard = ({ a }) => (
-    <Link to={`/berita/${a.id}`} className="hero">
+// Headline Beranda: foto penuh, judul besar, statistik dan tombol turun
+export const HeroCard = ({ a, onScroll }) => (
+    <section className="hero">
         <Img src={a.image_url} alt="" className="hero-img" />
         <div className="hero-shade" />
         <div className="hero-body">
             <span className="chip chip-solid">{a.category}</span>
-            <h2>{a.title}</h2>
-            <p>{timeAgo(a.created_at)}</p>
+            <Link to={`/berita/${a.id}`} className="hero-link"><h2>{a.title}</h2></Link>
+            {a.summary && <p className="hero-sum">{a.summary}</p>}
+            <div className="hero-foot">
+                <div className="hero-stat"><strong>{compact(a.views)}</strong><span>pembaca</span></div>
+                <button className="hero-down" onClick={onScroll} aria-label="Lihat berita lainnya"><ArrowDown size={20} /></button>
+            </div>
         </div>
-    </Link>
+    </section>
 );
 
-// Kartu trending (scroll horizontal)
 export const TrendCard = ({ a, rank }) => (
     <Link to={`/berita/${a.id}`} className="trend">
         <Img src={a.image_url} alt="" className="trend-img" />
@@ -30,14 +33,14 @@ export const TrendCard = ({ a, rank }) => (
     </Link>
 );
 
-// Kartu baris (daftar Berita, Bookmark, Terbaru)
+// Kartu berita: baris di mobile, kartu bergambar di desktop (diatur CSS)
 export const RowCard = ({ a, onRemove }) => (
     <div className="row">
         <Link to={`/berita/${a.id}`} className="row-link">
             <div className="row-text">
                 <span className="chip">{a.category}</span>
                 <h3>{a.title}</h3>
-                <p className="meta">{timeAgo(a.created_at)}</p>
+                <p className="meta">{a.author || "Redaksi Spotlight"} &middot; {timeAgo(a.created_at)}</p>
             </div>
             <Img src={a.image_url} alt="" className="row-img" />
         </Link>

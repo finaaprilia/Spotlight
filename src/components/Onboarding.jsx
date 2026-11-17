@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 
 const SLIDES = [
-    { title: "Berita pilihan, bukan banjir informasi", text: "Spotlight menyorot headline dan topik yang sedang ramai dibaca, sehingga Anda cepat tahu apa yang penting hari ini.", shape: "a" },
+    { title: "Berita pilihan, bukan abal-abal", text: "Spotlight menyorot headline dan topik yang sedang ramai dibaca, sehingga Anda cepat tahu apa yang penting hari ini.", shape: "a" },
     { title: "Cari, saring, dan urutkan", text: "Temukan berita lewat pencarian, kategori, dan pengurutan berdasarkan terbaru, terpopuler, atau judul.", shape: "b" },
     { title: "Simpan untuk dibaca nanti", text: "Bookmark berita yang menarik. Koleksi Anda tersimpan dan tetap bisa dibuka meski koneksi sedang lemah.", shape: "c" },
 ];

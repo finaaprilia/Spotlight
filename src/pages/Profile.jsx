@@ -1,5 +1,7 @@
-import { Bookmark, Moon, RotateCcw } from "lucide-react";
+import { Bookmark, Download, Moon, RotateCcw } from "lucide-react";
 import { useApp } from "../context/AppContext";
+import InstallButton from "../components/InstallButton";
+import { useInstallPrompt } from "../hooks/useInstallPrompt";
 
 const Switch = ({ on, onChange, label }) => (
     <button role="switch" aria-checked={on} aria-label={label} className={`switch${on ? " on" : ""}`} onClick={() => onChange(!on)}>
@@ -9,9 +11,10 @@ const Switch = ({ on, onChange, label }) => (
 
 export default function Profile({ onReplayIntro }) {
     const { dark, setDark, bookmarks, deviceId } = useApp();
+    const { installed } = useInstallPrompt();
 
     return (
-        <main className="page">
+        <main className="page narrow">
             <header className="top"><h1 className="title">Profil</h1></header>
 
             <section className="maker">
@@ -29,6 +32,14 @@ export default function Profile({ onReplayIntro }) {
                     <Moon size={18} />
                     <div><strong>Mode gelap</strong><span>Tampilan lebih nyaman di tempat redup</span></div>
                     <Switch on={dark} onChange={setDark} label="Mode gelap" />
+                </div>
+                <div className="setting">
+                    <Download size={18} />
+                    <div>
+                        <strong>Aplikasi</strong>
+                        <span>{installed ? "Sudah terpasang di perangkat ini" : "Pasang agar bisa dibuka offline"}</span>
+                    </div>
+                    <InstallButton className="btn primary sm" />
                 </div>
                 <div className="setting">
                     <Bookmark size={18} />

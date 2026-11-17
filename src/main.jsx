@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "@fontsource-variable/schibsted-grotesk";
 import "@fontsource-variable/newsreader";
+import "@fontsource-variable/big-shoulders-display";
 import "./index.css";
 import App from "./App.jsx";
 import { AppProvider } from "./context/AppContext.jsx";

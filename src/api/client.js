@@ -1,7 +1,6 @@
 import axios from "axios";
 
-// API berada pada domain yang sama (/api), baik di lokal (proxy Vite) maupun di Vercel.
-const api = axios.create({ baseURL: "/api", timeout: 15000 });
+const api = axios.create({ baseURL: "/api", timeout: 30000 });
 
 api.interceptors.response.use(
     (res) => res.data,
@@ -26,4 +25,8 @@ export const BookmarkAPI = {
     remove: (deviceId, articleId) =>
         api.delete(`/bookmarks/${articleId}`, { params: { device_id: deviceId } }),
     clear: (deviceId) => api.delete("/bookmarks", { params: { device_id: deviceId } }),
+};
+
+export const UploadAPI = {
+    image: (dataUrl) => api.post("/upload", { data: dataUrl }),
 };
