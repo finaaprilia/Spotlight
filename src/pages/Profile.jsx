@@ -1,7 +1,8 @@
-import { Bookmark, Download, Moon, RotateCcw } from "lucide-react";
+import { Bookmark, ChevronRight, History as HistoryIcon, Moon, RotateCcw } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { HistoryAPI } from "../api/client";
+import { useAsync } from "../hooks/useAsync";
 import { useApp } from "../context/AppContext";
-import InstallButton from "../components/InstallButton";
-import { useInstallPrompt } from "../hooks/useInstallPrompt";
 
 const Switch = ({ on, onChange, label }) => (
     <button role="switch" aria-checked={on} aria-label={label} className={`switch${on ? " on" : ""}`} onClick={() => onChange(!on)}>
@@ -11,10 +12,11 @@ const Switch = ({ on, onChange, label }) => (
 
 export default function Profile({ onReplayIntro }) {
     const { dark, setDark, bookmarks, deviceId } = useApp();
-    const { installed } = useInstallPrompt();
+    const navigate = useNavigate();
+    const { data: history } = useAsync(() => HistoryAPI.list(deviceId), [deviceId]);
 
     return (
-        <main className="page narrow">
+        <main className="page">
             <header className="top"><h1 className="title">Profil</h1></header>
 
             <section className="maker">
@@ -34,17 +36,17 @@ export default function Profile({ onReplayIntro }) {
                     <Switch on={dark} onChange={setDark} label="Mode gelap" />
                 </div>
                 <div className="setting">
-                    <Download size={18} />
-                    <div>
-                        <strong>Aplikasi</strong>
-                        <span>{installed ? "Sudah terpasang di perangkat ini" : "Pasang agar bisa dibuka offline"}</span>
-                    </div>
-                    <InstallButton className="btn primary sm" />
-                </div>
-                <div className="setting">
                     <Bookmark size={18} />
                     <div><strong>Bookmark tersimpan</strong><span>{bookmarks.length} berita</span></div>
                 </div>
+                <button className="setting" onClick={() => navigate("/riwayat")}>
+                    <HistoryIcon size={18} />
+                    <div>
+                        <strong>Riwayat baca</strong>
+                        <span>{history ? `${history.length} berita` : "Lihat berita yang pernah dibuka"}</span>
+                    </div>
+                    <ChevronRight size={18} />
+                </button>
                 <button className="setting" onClick={onReplayIntro}>
                     <RotateCcw size={18} />
                     <div><strong>Ulangi pengenalan</strong><span>Lihat kembali panduan awal</span></div>

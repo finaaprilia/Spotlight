@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowDown, Eye, Trash2 } from "lucide-react";
+import { Check, Eye, Trash2 } from "lucide-react";
 import { compact, timeAgo } from "../utils/format";
 
 const Img = ({ src, alt, className }) => (
@@ -7,23 +7,20 @@ const Img = ({ src, alt, className }) => (
         onError={(e) => (e.currentTarget.style.visibility = "hidden")} />
 );
 
-// Headline Beranda: foto penuh, judul besar, statistik dan tombol turun
-export const HeroCard = ({ a, onScroll }) => (
-    <section className="hero">
+// Kartu utama (headline Beranda)
+export const HeroCard = ({ a }) => (
+    <Link to={`/berita/${a.id}`} className="hero">
         <Img src={a.image_url} alt="" className="hero-img" />
         <div className="hero-shade" />
         <div className="hero-body">
             <span className="chip chip-solid">{a.category}</span>
-            <Link to={`/berita/${a.id}`} className="hero-link"><h2>{a.title}</h2></Link>
-            {a.summary && <p className="hero-sum">{a.summary}</p>}
-            <div className="hero-foot">
-                <div className="hero-stat"><strong>{compact(a.views)}</strong><span>pembaca</span></div>
-                <button className="hero-down" onClick={onScroll} aria-label="Lihat berita lainnya"><ArrowDown size={20} /></button>
-            </div>
+            <h2>{a.title}</h2>
+            <p>{timeAgo(a.created_at)}</p>
         </div>
-    </section>
+    </Link>
 );
 
+// Kartu trending (scroll horizontal)
 export const TrendCard = ({ a, rank }) => (
     <Link to={`/berita/${a.id}`} className="trend">
         <Img src={a.image_url} alt="" className="trend-img" />
@@ -33,21 +30,48 @@ export const TrendCard = ({ a, rank }) => (
     </Link>
 );
 
-// Kartu berita: baris di mobile, kartu bergambar di desktop (diatur CSS)
-export const RowCard = ({ a, onRemove }) => (
-    <div className="row">
-        <Link to={`/berita/${a.id}`} className="row-link">
+// Kartu baris (daftar Berita, Folder Bookmark, Riwayat, Terbaru)
+//  - onRemove   : tombol hapus kecil di pojok kanan bawah (dipakai Riwayat)
+//  - selectable : mode pilih, kartu menjadi tombol dengan kotak centang
+//  - meta       : teks pengganti waktu terbit
+export const RowCard = ({ a, onRemove, selectable, checked, onToggle, meta }) => {
+    const body = (
+        <>
             <div className="row-text">
                 <span className="chip">{a.category}</span>
                 <h3>{a.title}</h3>
-                <p className="meta">{a.author || "Redaksi Spotlight"} &middot; {timeAgo(a.created_at)}</p>
+                <p className="meta">{meta ?? timeAgo(a.created_at)}</p>
             </div>
             <Img src={a.image_url} alt="" className="row-img" />
-        </Link>
-        {onRemove && (
-            <button className="row-remove" aria-label={`Hapus bookmark ${a.title}`} onClick={() => onRemove(a)}>
-                <Trash2 size={16} />
-            </button>
-        )}
-    </div>
-);
+        </>
+    );
+
+    if (selectable) {
+        return (
+            <div className={`row${checked ? " row-selected" : ""}`}>
+                <button
+                    type="button"
+                    className="row-link row-pick"
+                    onClick={() => onToggle(a.id)}
+                    aria-pressed={checked}
+                >
+                    <span className={`check-box${checked ? " on" : ""}`} aria-hidden="true">
+                        {checked && <Check size={14} strokeWidth={3} />}
+                    </span>
+                    {body}
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="row">
+            <Link to={`/berita/${a.id}`} className="row-link">{body}</Link>
+            {onRemove && (
+                <button className="row-remove" aria-label={`Hapus ${a.title}`} onClick={() => onRemove(a)}>
+                    <Trash2 size={16} />
+                </button>
+            )}
+        </div>
+    );
+};

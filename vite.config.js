@@ -31,7 +31,7 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
-            urlPattern: /\/api\/(articles|bookmarks)/,
+            urlPattern: /\/api\/(articles|bookmarks|history)/,
             method: "GET",
             handler: "NetworkFirst",
             options: {

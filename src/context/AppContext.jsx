@@ -34,6 +34,7 @@ export function AppProvider({ children }) {
     const [dark, setDark] = useState(() => read("sp_dark", matchMedia("(prefers-color-scheme: dark)").matches));
     const [onboarded, setOnboardedState] = useState(() => read("sp_onboarded", false));
     const [bookmarks, setBookmarks] = useState([]);
+    const [bookmarksReady, setBookmarksReady] = useState(false);
     const [toastMsg, setToastMsg] = useState("");
 
     useEffect(() => {
@@ -58,9 +59,11 @@ export function AppProvider({ children }) {
     };
 
     const refreshBookmarks = useCallback(
-        () => BookmarkAPI.list(deviceId).then((data) => {
-            if (Array.isArray(data)) setBookmarks(data);
-        }).catch(() => { }),
+        () =>
+            BookmarkAPI.list(deviceId)
+                .then(setBookmarks)
+                .catch(() => { })
+                .finally(() => setBookmarksReady(true)),
         [deviceId]
     );
     useEffect(() => {
@@ -85,6 +88,21 @@ export function AppProvider({ children }) {
         }
     };
 
+    // Menghapus beberapa bookmark sekaligus (mode pilih dan hapus semua di folder)
+    const removeBookmarks = async (ids) => {
+        if (!ids.length) return true;
+        try {
+            await Promise.all(ids.map((id) => BookmarkAPI.remove(deviceId, id)));
+            setBookmarks((l) => l.filter((b) => !ids.includes(b.id)));
+            toast(`${ids.length} bookmark dihapus`);
+            return true;
+        } catch (e) {
+            toast(e.message);
+            refreshBookmarks();
+            return false;
+        }
+    };
+
     const clearBookmarks = async () => {
         try {
             await BookmarkAPI.clear(deviceId);
@@ -99,7 +117,8 @@ export function AppProvider({ children }) {
         <Ctx.Provider
             value={{
                 deviceId, dark, setDark, onboarded, setOnboarded,
-                bookmarks, isBookmarked, toggleBookmark, clearBookmarks, refreshBookmarks, toast,
+                bookmarks, bookmarksReady, isBookmarked, toggleBookmark,
+                removeBookmarks, clearBookmarks, refreshBookmarks, toast,
             }}
         >
             {children}

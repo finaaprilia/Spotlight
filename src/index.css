@@ -1180,7 +1180,7 @@ img {
   text-align: left;
 }
 
-.setting:last-of-type {
+.setting:last-child {
   border-bottom: 0;
 }
 
@@ -1797,4 +1797,218 @@ img {
   .toast {
     bottom: 32px;
   }
+}
+
+/* Folder bookmark */
+.folders {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 16px;
+}
+
+.fcard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.fcard-cover {
+  position: relative;
+  aspect-ratio: 1 / .82;
+  border-radius: 22px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+}
+
+.fcard-cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fcard-cover:not(.fcard-all)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 55%, rgba(5, 10, 18, .35));
+}
+
+.fcard-initial {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: -.04em;
+}
+
+.fcard-all {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  align-content: center;
+  justify-items: center;
+  gap: 2px;
+}
+
+.fcard-all::before {
+  content: "";
+  position: absolute;
+  width: 120%;
+  aspect-ratio: 1;
+  right: -45%;
+  top: -55%;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--accent-ink) 25%, transparent);
+}
+
+.fcard-all strong {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  line-height: 1.1;
+}
+
+.fcard-all span {
+  font-size: .82rem;
+  font-weight: 600;
+  opacity: .85;
+}
+
+.fcard-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 2px;
+}
+
+.fcard-meta h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fcard-meta span {
+  color: var(--muted);
+  font-size: .82rem;
+  white-space: nowrap;
+}
+
+/* Halaman isi folder */
+.fhead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fhead-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.fhead-title h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.15;
+}
+
+.menu-wrap {
+  position: relative;
+}
+
+.menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: 48px;
+  z-index: 70;
+  min-width: 230px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--glass-shadow);
+}
+
+.menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 11px;
+  font-weight: 600;
+  font-size: .9rem;
+  text-align: left;
+}
+
+.menu button:hover {
+  background: var(--accent-soft);
+}
+
+.menu button.danger {
+  color: var(--danger);
+}
+
+/* Mode pilih */
+.selbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.selbar strong {
+  flex: 1;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.selall {
+  align-self: flex-start;
+  margin-top: -8px;
+}
+
+.check-box {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 2px solid var(--line);
+  display: grid;
+  place-items: center;
+  color: var(--accent-ink);
+  transition: background .15s, border-color .15s;
+}
+
+.check-box.on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.row-pick {
+  width: 100%;
+  text-align: left;
+}
+
+.row-selected {
+  background: var(--accent-soft);
+  margin: 0 -12px;
+  padding: 0 12px;
+  border-radius: 16px;
 }

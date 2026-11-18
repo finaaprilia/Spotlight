@@ -1,17 +1,13 @@
 import axios from "axios";
 
-const api = axios.create({ baseURL: "/api", timeout: 30000 });
+// API berada pada domain yang sama (/api), baik di lokal (proxy Vite) maupun di Vercel.
+const api = axios.create({ baseURL: "/api", timeout: 15000 });
 
 api.interceptors.response.use(
-    (res) => {
-        if (typeof res.data === "string" && res.data.trim().startsWith("<")) {
-            throw new Error("Server mengembalikan halaman HTML. Pastikan endpoint API dan Environment Variables di Vercel sudah benar.");
-        }
-        return res.data;
-    },
+    (res) => res.data,
     (err) =>
         Promise.reject(
-            new Error(err.response?.data?.error || err.message || "Tidak dapat terhubung ke server. Periksa koneksi Anda.")
+            new Error(err.response?.data?.error || "Tidak dapat terhubung ke server. Periksa koneksi Anda.")
         )
 );
 
@@ -32,6 +28,14 @@ export const BookmarkAPI = {
     clear: (deviceId) => api.delete("/bookmarks", { params: { device_id: deviceId } }),
 };
 
+export const HistoryAPI = {
+    list: (deviceId) => api.get("/history", { params: { device_id: deviceId } }),
+    record: (deviceId, articleId) => api.post("/history", { device_id: deviceId, article_id: articleId }),
+    remove: (deviceId, articleId) =>
+        api.delete(`/history/${articleId}`, { params: { device_id: deviceId } }),
+    clear: (deviceId) => api.delete("/history", { params: { device_id: deviceId } }),
+};
+
 export const UploadAPI = {
-    image: (dataUrl) => api.post("/upload", { data: dataUrl }),
+    image: (data) => api.post("/upload", { data }),
 };

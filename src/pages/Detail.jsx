@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Bookmark, Clock, Eye, Pencil, Share2, Trash2 } from "lucide-react";
-import { ArticleAPI } from "../api/client";
+import { ArticleAPI, HistoryAPI } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
 import { useApp } from "../context/AppContext";
 import ArticleForm from "../components/ArticleForm";
@@ -12,13 +12,15 @@ import { compact, fmtDate, readTime } from "../utils/format";
 export default function Detail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { isBookmarked, toggleBookmark, refreshBookmarks, toast } = useApp();
+    const { deviceId, isBookmarked, toggleBookmark, refreshBookmarks, toast } = useApp();
     const [editing, setEditing] = useState(false);
     const [confirm, setConfirm] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
     const { data: article, loading, error, reload } = useAsync(async () => {
         const a = await ArticleAPI.get(id);
+        // Catat riwayat baca setiap berita dibuka (waktu bacanya diperbarui bila sudah pernah)
+        HistoryAPI.record(deviceId, id).catch(() => { });
         // Views bertambah otomatis, satu kali per sesi untuk tiap berita
         const key = `viewed:${id}`;
         if (!sessionStorage.getItem(key)) {
@@ -28,6 +30,7 @@ export default function Detail() {
         }
         return a;
     }, [id]);
+
 
     const share = async () => {
         const url = window.location.href;
