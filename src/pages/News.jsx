@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Plus, Search, X } from "lucide-react";
 import { ArticleAPI } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
@@ -12,11 +12,17 @@ import { CATEGORIES } from "../utils/format";
 export default function News() {
     const { toast } = useApp();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const catFromUrl = searchParams.get("category");
     const [search, setSearch] = useState("");
     const [query, setQuery] = useState("");
-    const [category, setCategory] = useState("Semua");
+    const [category, setCategory] = useState(catFromUrl || "Semua");
     const [sort, setSort] = useState("terbaru");
     const [formOpen, setFormOpen] = useState(false);
+
+    useEffect(() => {
+        if (catFromUrl) setCategory(catFromUrl);
+    }, [catFromUrl]);
 
     // Debounce pencarian agar tidak memanggil API di setiap ketikan
     useEffect(() => {
