@@ -1348,8 +1348,9 @@ img {
 
 /* Onboarding */
 .onb {
+  --u: 1;
   min-height: 100dvh;
-  max-width: 520px;
+  max-width: 480px;
   margin: 0 auto;
   padding: calc(20px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
   display: flex;
@@ -1369,7 +1370,7 @@ img {
   flex: 1;
   min-height: 260px;
   border-radius: 32px;
-  background: var(--surface-2);
+  background: var(--ink);
   overflow: hidden;
 }
 
@@ -1384,72 +1385,72 @@ img {
 }
 
 .onb-art span:nth-child(2) {
-  background: var(--ink);
+  background: #FFE9A8;
 }
 
 .onb-art span:nth-child(3) {
-  border: 3px solid var(--accent-text);
+  border: 3px solid rgba(255, 255, 255, .5);
 }
 
 .shape-a span:nth-child(1) {
-  width: 210px;
-  height: 210px;
-  left: -40px;
-  bottom: -50px;
+  width: calc(210px * var(--u));
+  height: calc(210px * var(--u));
+  left: calc(-40px * var(--u));
+  bottom: calc(-50px * var(--u));
 }
 
 .shape-a span:nth-child(2) {
-  width: 90px;
-  height: 90px;
-  right: 36px;
-  top: 40px;
+  width: calc(90px * var(--u));
+  height: calc(90px * var(--u));
+  right: calc(36px * var(--u));
+  top: calc(40px * var(--u));
 }
 
 .shape-a span:nth-child(3) {
-  width: 150px;
-  height: 150px;
-  right: -30px;
-  bottom: 60px;
+  width: calc(150px * var(--u));
+  height: calc(150px * var(--u));
+  right: calc(-30px * var(--u));
+  bottom: calc(60px * var(--u));
 }
 
 .shape-b span:nth-child(1) {
-  width: 120px;
-  height: 120px;
-  right: 40px;
-  bottom: 30px;
+  width: calc(120px * var(--u));
+  height: calc(120px * var(--u));
+  right: calc(40px * var(--u));
+  bottom: calc(30px * var(--u));
 }
 
 .shape-b span:nth-child(2) {
-  width: 180px;
-  height: 180px;
-  left: 30px;
-  top: -40px;
+  width: calc(180px * var(--u));
+  height: calc(180px * var(--u));
+  left: calc(30px * var(--u));
+  top: calc(-40px * var(--u));
 }
 
 .shape-b span:nth-child(3) {
-  width: 240px;
-  height: 240px;
+  width: calc(240px * var(--u));
+  height: calc(240px * var(--u));
   left: 30%;
-  bottom: -120px;
+  bottom: calc(-120px * var(--u));
 }
 
 .shape-c span:nth-child(1) {
-  width: 260px;
-  height: 260px;
-  right: -80px;
-  top: -60px;
+  width: calc(260px * var(--u));
+  height: calc(260px * var(--u));
+  right: calc(-80px * var(--u));
+  top: calc(-60px * var(--u));
 }
 
 .shape-c span:nth-child(2) {
-  width: 70px;
-  height: 70px;
-  left: 40px;
-  bottom: 50px;
+  width: calc(70px * var(--u));
+  height: calc(70px * var(--u));
+  left: calc(40px * var(--u));
+  bottom: calc(50px * var(--u));
 }
 
 .shape-c span:nth-child(3) {
-  width: 130px;
-  height: 130px;
+  width: calc(130px * var(--u));
+  height: calc(130px * var(--u));
   left: 26%;
   top: 38%;
 }
@@ -1461,11 +1462,10 @@ img {
 }
 
 .onb-body h1 {
-  font-family: var(--display);
-  font-size: 2.8rem;
-  line-height: .95;
+  font-size: 1.9rem;
+  line-height: 1.1;
   font-weight: 800;
-  text-transform: uppercase;
+  letter-spacing: -.03em;
 }
 
 .onb-body p {
@@ -1495,6 +1495,92 @@ img {
 .dots i.on {
   width: 26px;
   background: var(--accent);
+}
+
+/* Onboarding: tablet */
+@media (min-width: 600px) and (max-width: 899px) {
+  .onb {
+    --u: 1.35;
+    max-width: 680px;
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  .onb-body h1 {
+    font-size: 2.3rem;
+  }
+
+  .onb-body p {
+    font-size: 1.05rem;
+  }
+}
+
+/* Onboarding: desktop dua kolom */
+@media (min-width: 900px) {
+  .onb {
+    --u: 1.9;
+    width: 100%;
+    max-width: 1280px;
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    column-gap: clamp(48px, 7vw, 112px);
+    row-gap: 0;
+    padding: 40px 56px;
+  }
+
+  .onb-skip {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    font-size: 1rem;
+  }
+
+  .onb-art {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    min-height: 0;
+    border-radius: 40px;
+  }
+
+  .onb-body {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: end;
+    gap: 18px;
+  }
+
+  .onb-body h1 {
+    font-size: clamp(2.4rem, 3.6vw, 3.8rem);
+    line-height: 1.05;
+  }
+
+  .onb-body p {
+    font-size: 1.15rem;
+    line-height: 1.55;
+    max-width: 44ch;
+  }
+
+  .onb-foot {
+    grid-column: 2;
+    grid-row: 3;
+    padding-top: 40px;
+  }
+
+  .onb-foot .btn {
+    padding: 15px 28px;
+    font-size: 1rem;
+    border-radius: 16px;
+  }
+
+  .dots i {
+    height: 10px;
+    width: 10px;
+  }
+
+  .dots i.on {
+    width: 34px;
+  }
 }
 
 /* Toast */
