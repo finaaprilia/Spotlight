@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowDownRight, Sparkles } from "lucide-react";
-import { CATEGORIES, timeAgo } from "../utils/format";
+import { Sparkles } from "lucide-react";
+import { CATEGORIES } from "../utils/format";
 
 const getCardStyle = (index, total, isHovered) => {
     if (isHovered) {
@@ -47,9 +47,6 @@ export default function EditorialHero({ stories = [] }) {
     if (!stories.length) return null;
 
     const deck = stories.slice(0, 4);
-    // Kartu aktif yang disorot atau kartu paling depan (terakhir di stack)
-    const activeIdx = hoveredIdx !== null ? hoveredIdx : deck.length - 1;
-    const activeStory = deck[activeIdx] || deck[0];
 
     return (
         <section className="editorial-hero" aria-label="Sorotan Utama">
@@ -102,18 +99,6 @@ export default function EditorialHero({ stories = [] }) {
 
                     <span className="editorial-big-text right" aria-hidden="true">PDATES</span>
                 </div>
-
-                {/* Bar info berita aktif yang sedang dipilih/disorot */}
-                {activeStory && (
-                    <div className="editorial-active-bar">
-                        <span className="chip chip-solid">{activeStory.category}</span>
-                        <Link to={`/berita/${activeStory.id}`} className="editorial-active-title">
-                            <span>{activeStory.title}</span>
-                            <ArrowDownRight size={17} className="editorial-active-arrow" />
-                        </Link>
-                        <span className="editorial-active-time">{timeAgo(activeStory.created_at)}</span>
-                    </div>
-                )}
 
                 {/* Deskripsi & Tagline Bawah */}
                 <div className="editorial-foot">

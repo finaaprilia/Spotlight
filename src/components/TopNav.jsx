@@ -16,10 +16,6 @@ export default function TopNav() {
     return (
         <header className="topnav">
             <Link to="/" className="logo" aria-label="Spotlight, ke Beranda">
-                <svg width="26" height="26" viewBox="0 0 512 512" aria-hidden="true">
-                    <circle cx="256" cy="256" r="190" fill="none" stroke="currentColor" strokeWidth="44" />
-                    <circle cx="256" cy="256" r="72" fill="var(--accent)" />
-                </svg>
                 Spotlight
             </Link>
 

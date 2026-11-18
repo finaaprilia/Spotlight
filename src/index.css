@@ -304,8 +304,18 @@ img {
   gap: 4px;
   padding: 5px;
   border-radius: 999px;
-  border: 1.5px solid var(--ink);
-  background: var(--bg);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
+  transition: background .2s ease, border-color .2s ease;
+}
+
+[data-theme="light"] .pill-nav {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(27, 15, 16, 0.12);
+  box-shadow: 0 4px 18px rgba(60, 10, 14, 0.06);
 }
 
 .pill {
@@ -645,67 +655,6 @@ img {
   overflow: hidden;
   margin: 0;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
-}
-
-/* Active Story Bar */
-.editorial-active-bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 18px;
-  margin: 22px auto 0;
-  width: 100%;
-  max-width: 680px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.editorial-active-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: #FFFFFF;
-  text-decoration: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-}
-
-.editorial-active-arrow {
-  color: var(--accent-text);
-  flex-shrink: 0;
-  transition: transform 0.2s ease;
-}
-
-.editorial-active-title:hover .editorial-active-arrow {
-  transform: translate(3px, 3px);
-}
-
-.editorial-active-time {
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.6);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-@media (max-width: 640px) {
-  .editorial-active-bar {
-    flex-wrap: wrap;
-    border-radius: 18px;
-    padding: 12px 14px;
-    margin-top: 14px;
-  }
-  .editorial-active-title {
-    width: 100%;
-    order: 3;
-    white-space: normal;
-  }
 }
 
 /* Bottom Foot */
@@ -1942,7 +1891,7 @@ img {
   .topnav {
     position: sticky;
     top: 0;
-    z-index: 30;
+    z-index: 50;
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
