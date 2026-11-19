@@ -9,17 +9,15 @@ import { Empty, ErrorBox, Loading } from "../components/States";
 export default function Home() {
     const { data, loading, error, reload } = useAsync(() => ArticleAPI.list({ limit: 40 }), []);
 
-    const { headline, showcase, trending, latest } = useMemo(() => {
+    const { showcase, trending, latest } = useMemo(() => {
         const all = Array.isArray(data) ? data : [];
         const byDate = [...all].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        const headline = all.find((a) => a.is_featured) || byDate[0];
-        const deck = [headline, ...all.filter((a) => a?.id !== headline?.id)].filter(Boolean).slice(0, 4);
+        const deck = byDate.slice(0, 4);
 
         return {
-            headline,
             showcase: deck,
             trending: [...all].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 6),
-            latest: byDate.filter((a) => a.id !== headline?.id).slice(0, 8),
+            latest: byDate.slice(0, 8),
         };
     }, [data]);
 

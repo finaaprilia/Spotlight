@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Bookmark } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { Empty } from "../components/States";
 
@@ -42,7 +41,6 @@ export default function Bookmarks() {
                 <div className="folders">
                     <Link to="/bookmark/semua" className="fcard">
                         <div className="fcard-cover fcard-all">
-                            <Bookmark size={26} strokeWidth={1.9} />
                             <strong>{bookmarks.length}</strong>
                             <span>berita tersimpan</span>
                         </div>

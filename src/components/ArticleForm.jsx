@@ -4,7 +4,7 @@ import { ArticleAPI, UploadAPI } from "../api/client";
 import { CATEGORIES } from "../utils/format";
 import { compressImage } from "../utils/image";
 
-const EMPTY = { title: "", category: "Umum", author: "", image_url: "", summary: "", content: "", is_featured: false };
+const EMPTY = { title: "", category: "Umum", author: "", image_url: "", summary: "", content: "" };
 
 export default function ArticleForm({ open, article, onClose, onSaved }) {
     const [form, setForm] = useState(EMPTY);
@@ -52,7 +52,7 @@ export default function ArticleForm({ open, article, onClose, onSaved }) {
             const payload = {
                 title: form.title.trim(), category: form.category, author: form.author.trim(),
                 image_url: form.image_url || null, summary: form.summary?.trim() || "",
-                content: form.content.trim(), is_featured: form.is_featured,
+                content: form.content.trim(), is_featured: false,
             };
             const saved = article ? await ArticleAPI.update(article.id, payload) : await ArticleAPI.create(payload);
             onSaved(saved, Boolean(article));
@@ -104,10 +104,6 @@ export default function ArticleForm({ open, article, onClose, onSaved }) {
                 </div>
                 <label>Ringkasan<textarea rows="2" value={form.summary || ""} onChange={set("summary")} placeholder="Satu atau dua kalimat pembuka" /></label>
                 <label>Isi berita<textarea rows="7" value={form.content} onChange={set("content")} placeholder="Pisahkan paragraf dengan baris kosong" /></label>
-                <label className="check">
-                    <input type="checkbox" checked={form.is_featured} onChange={set("is_featured")} />
-                    Jadikan headline di Beranda
-                </label>
 
                 {error && <p className="form-error">{error}</p>}
                 <button className="btn primary block" disabled={saving || uploading}>{saving ? "Menyimpan" : "Simpan berita"}</button>
