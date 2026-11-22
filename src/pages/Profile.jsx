@@ -1,8 +1,9 @@
-import { Bookmark, ChevronRight, History as HistoryIcon, Moon, RotateCcw } from "lucide-react";
+import { Bookmark, ChevronRight, Download, History as HistoryIcon, Moon, RotateCcw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { HistoryAPI } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
 import { useApp } from "../context/AppContext";
+import InstallButton from "../components/InstallButton";
 
 const Switch = ({ on, onChange, label }) => (
     <button role="switch" aria-checked={on} aria-label={label} className={`switch${on ? " on" : ""}`} onClick={() => onChange(!on)}>
@@ -30,6 +31,11 @@ export default function Profile({ onReplayIntro }) {
 
             <section className="panel">
                 <h3>Pengaturan</h3>
+                <div className="setting">
+                    <Download size={18} />
+                    <div><strong>Pasang aplikasi</strong><span>Install Spotlight ke layar utama</span></div>
+                    <InstallButton className="btn primary sm" />
+                </div>
                 <div className="setting">
                     <Moon size={18} />
                     <div><strong>Mode gelap</strong><span>Tampilan lebih nyaman di tempat redup</span></div>

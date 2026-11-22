@@ -5,6 +5,7 @@ import { useAsync } from "../hooks/useAsync";
 import EditorialHero from "../components/EditorialHero";
 import { RowCard, TrendCard } from "../components/ArticleCard";
 import { Empty, ErrorBox, Loading } from "../components/States";
+import InstallButton from "../components/InstallButton";
 
 export default function Home() {
     const { data, loading, error, reload } = useAsync(() => ArticleAPI.list({ limit: 40 }), []);
@@ -30,6 +31,7 @@ export default function Home() {
                     <h1 className="brand">Spotlight</h1>
                     <p className="muted">{today}</p>
                 </div>
+                <InstallButton className="btn primary sm" />
             </header>
 
             {loading && <Loading />}
