@@ -1,21 +1,23 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Bookmark, Clock, Eye, Pencil, Share2, Trash2 } from "lucide-react";
+import { ArrowLeft, Bookmark, Clock, Eye, Folder, Pencil, Share2, Trash2 } from "lucide-react";
 import { ArticleAPI, HistoryAPI } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
 import { useApp } from "../context/AppContext";
 import ArticleForm from "../components/ArticleForm";
 import ConfirmDialog from "../components/ConfirmDialog";
+import BookmarkFolderModal from "../components/BookmarkFolderModal";
 import { ErrorBox, Loading } from "../components/States";
 import { compact, fmtDate, readTime } from "../utils/format";
 
 export default function Detail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { deviceId, isBookmarked, toggleBookmark, refreshBookmarks, toast } = useApp();
+    const { deviceId, isBookmarked, toggleBookmark, refreshBookmarks, getArticleFolder, toast } = useApp();
     const [editing, setEditing] = useState(false);
     const [confirm, setConfirm] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [folderModalOpen, setFolderModalOpen] = useState(false);
 
     const { data: article, loading, error, reload } = useAsync(async () => {
         const a = await ArticleAPI.get(id);
@@ -68,6 +70,20 @@ export default function Detail() {
         );
 
     const saved = isBookmarked(article.id);
+    const activeFolder = saved ? getArticleFolder(article) : null;
+
+    const handleBookmarkClick = async () => {
+        if (saved) {
+            await toggleBookmark(article);
+        } else {
+            // Otomatis disimpan ke kategori bawaannya terlebih dahulu
+            const success = await toggleBookmark(article);
+            if (success) {
+                // Munculkan notifikasi/dialog pilihan untuk memindahkan folder jika diinginkan
+                setFolderModalOpen(true);
+            }
+        }
+    };
 
     return (
         <article className="detail">
@@ -78,7 +94,7 @@ export default function Detail() {
                     <button className="icon-btn glass" onClick={() => navigate(-1)} aria-label="Kembali"><ArrowLeft size={20} /></button>
                     <div className="cover-actions">
                         <button className="icon-btn glass" onClick={share} aria-label="Bagikan"><Share2 size={19} /></button>
-                        <button className={`icon-btn glass${saved ? " active" : ""}`} onClick={() => toggleBookmark(article)}
+                        <button className={`icon-btn glass${saved ? " active" : ""}`} onClick={handleBookmarkClick}
                             aria-label={saved ? "Hapus bookmark" : "Simpan bookmark"} aria-pressed={saved}>
                             <Bookmark size={19} fill={saved ? "currentColor" : "none"} />
                         </button>
@@ -87,7 +103,20 @@ export default function Detail() {
             </div>
 
             <div className="sheet-body">
-                <span className="chip chip-solid">{article.category}</span>
+                <div className="detail-tag-row">
+                    <span className="chip chip-solid">{article.category}</span>
+                    {saved && (
+                        <button
+                            type="button"
+                            className="folder-chip-btn"
+                            onClick={() => setFolderModalOpen(true)}
+                            aria-label="Ubah folder bookmark"
+                        >
+                            <Folder size={13} />
+                            <span>Folder: {activeFolder}</span>
+                        </button>
+                    )}
+                </div>
                 <h1>{article.title}</h1>
 
                 <div className="byline">
@@ -126,6 +155,12 @@ export default function Detail() {
                 loading={deleting}
                 onCancel={() => setConfirm(false)}
                 onConfirm={remove}
+            />
+            <BookmarkFolderModal
+                open={folderModalOpen}
+                article={article}
+                mode="select"
+                onClose={() => setFolderModalOpen(false)}
             />
         </article>
     );
