@@ -7,6 +7,7 @@ import { useApp } from "../context/AppContext";
 import ArticleForm from "../components/ArticleForm";
 import ConfirmDialog from "../components/ConfirmDialog";
 import BookmarkFolderModal from "../components/BookmarkFolderModal";
+import LazyImage from "../components/LazyImage";
 import { ErrorBox, Loading } from "../components/States";
 import { compact, fmtDate, readTime } from "../utils/format";
 
@@ -88,7 +89,13 @@ export default function Detail() {
     return (
         <article className="detail">
             <div className="cover">
-                {article.image_url && <img src={article.image_url} alt="" />}
+                {article.image_url && (
+                    <LazyImage
+                        src={article.image_url}
+                        alt={article.title}
+                        className="detail-cover-lazy"
+                    />
+                )}
                 <div className="cover-shade" />
                 <div className="cover-bar">
                     <button className="icon-btn glass" onClick={() => navigate(-1)} aria-label="Kembali"><ArrowLeft size={20} /></button>

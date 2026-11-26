@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import { CATEGORIES } from "../utils/format";
+import LazyImage from "./LazyImage";
 
 const getCardStyle = (index, total, isHovered) => {
     if (isHovered) {
@@ -74,12 +75,10 @@ export default function EditorialHero({ stories = [] }) {
                                         aria-label={item.title}
                                     >
                                         {item.image_url ? (
-                                            <img
+                                            <LazyImage
                                                 src={item.image_url}
-                                                alt=""
+                                                alt={item.title}
                                                 className="deck-card-img"
-                                                loading="lazy"
-                                                onError={(e) => (e.currentTarget.style.display = "none")}
                                             />
                                         ) : (
                                             <div className="deck-card-placeholder">

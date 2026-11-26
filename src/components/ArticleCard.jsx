@@ -1,16 +1,12 @@
 import { Link } from "react-router-dom";
 import { Check, Eye, Trash2 } from "lucide-react";
 import { compact, timeAgo } from "../utils/format";
-
-const Img = ({ src, alt, className }) => (
-    <img className={className} src={src} alt={alt} loading="lazy"
-        onError={(e) => (e.currentTarget.style.visibility = "hidden")} />
-);
+import LazyImage from "./LazyImage";
 
 // Kartu utama (headline Beranda)
 export const HeroCard = ({ a }) => (
     <Link to={`/berita/${a.id}`} className="hero">
-        <Img src={a.image_url} alt="" className="hero-img" />
+        <LazyImage src={a.image_url} alt={a.title} className="hero-img" />
         <div className="hero-shade" />
         <div className="hero-body">
             <span className="chip chip-solid">{a.category}</span>
@@ -23,7 +19,7 @@ export const HeroCard = ({ a }) => (
 // Kartu trending (scroll horizontal)
 export const TrendCard = ({ a, rank }) => (
     <Link to={`/berita/${a.id}`} className="trend">
-        <Img src={a.image_url} alt="" className="trend-img" />
+        <LazyImage src={a.image_url} alt={a.title} className="trend-img" />
         <span className="trend-rank">{rank}</span>
         <h3>{a.title}</h3>
         <p className="meta"><Eye size={13} /> {compact(a.views)}</p>
@@ -42,7 +38,7 @@ export const RowCard = ({ a, onRemove, selectable, checked, onToggle, meta }) =>
                 <h3>{a.title}</h3>
                 <p className="meta">{meta ?? timeAgo(a.created_at)}</p>
             </div>
-            <Img src={a.image_url} alt="" className="row-img" />
+            <LazyImage src={a.image_url} alt={a.title} className="row-img" />
         </>
     );
 

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { queryCache } from "./queryCache";
 
 // API berada pada domain yang sama (/api), baik di lokal (proxy Vite) maupun di Vercel.
 const api = axios.create({ baseURL: "/api", timeout: 15000 });
@@ -12,12 +13,57 @@ api.interceptors.response.use(
 );
 
 export const ArticleAPI = {
-    list: (params = {}) => api.get("/articles", { params }),
-    get: (id) => api.get(`/articles/${id}`),
-    create: (data) => api.post("/articles", data),
-    update: (id, data) => api.put(`/articles/${id}`, data),
+    list: async (params = {}, options = {}) => {
+        const cacheKey = queryCache.generateKey("/articles", params);
+        if (!options.bypassCache) {
+            const cached = queryCache.get(cacheKey);
+            if (cached) return cached;
+        }
+
+        console.log(
+            `%c[QueryCache] 🌐 CACHE MISS: ${cacheKey} (meminta data artikel terbaru ke server...)`,
+            "color: #3b82f6; font-weight: bold;"
+        );
+        const data = await api.get("/articles", { params });
+        queryCache.set(cacheKey, data);
+        return data;
+    },
+
+    get: async (id, options = {}) => {
+        const cacheKey = `/articles/${id}`;
+        if (!options.bypassCache) {
+            const cached = queryCache.get(cacheKey);
+            if (cached) return cached;
+        }
+
+        console.log(
+            `%c[QueryCache] 🌐 CACHE MISS: ${cacheKey} (mengambil detail berita dari server...)`,
+            "color: #3b82f6; font-weight: bold;"
+        );
+        const data = await api.get(`/articles/${id}`);
+        queryCache.set(cacheKey, data);
+        return data;
+    },
+
+    create: async (data) => {
+        const res = await api.post("/articles", data);
+        queryCache.invalidate("/articles");
+        return res;
+    },
+
+    update: async (id, data) => {
+        const res = await api.put(`/articles/${id}`, data);
+        queryCache.invalidate("/articles");
+        return res;
+    },
+
     view: (id) => api.patch(`/articles/${id}/view`),
-    remove: (id) => api.delete(`/articles/${id}`),
+
+    remove: async (id) => {
+        const res = await api.delete(`/articles/${id}`);
+        queryCache.invalidate("/articles");
+        return res;
+    },
 };
 
 export const BookmarkAPI = {
