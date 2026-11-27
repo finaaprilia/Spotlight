@@ -8,6 +8,9 @@ const need = (v, name) => {
 
 export const HistoryController = {
     list: handle((req) => HistoryModel.list(need(req.query.device_id, "device_id"))),
+    trending: handle((req) =>
+        HistoryModel.trending(need(req.query.device_id, "device_id"), Number(req.query.limit) || 10)
+    ),
     record: handle(
         (req) =>
             HistoryModel.record(need(req.body.device_id, "device_id"), need(req.body.article_id, "article_id")),

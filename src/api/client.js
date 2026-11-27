@@ -227,6 +227,8 @@ export const HistoryAPI = {
         if (article) {
             offlineStore.recordHistory(article);
         }
+        // Selalu tambah read_count lokal setiap kali artikel dibuka (tidak hanya saat offline)
+        offlineStore.incrementReadCount(articleId);
 
         if (navigator.onLine) {
             try {
@@ -260,6 +262,28 @@ export const HistoryAPI = {
             }
         }
         return { success: true };
+    },
+
+    // Ambil top-N trending berdasarkan berapa kali user membuka berita (read_count personal)
+    trending: async (deviceId, limit = 10) => {
+        // Selalu ambil data lokal dulu (instan, offline-ready)
+        const localTrending = offlineStore.getLocalTrending(limit);
+
+        if (navigator.onLine) {
+            try {
+                const data = await api.get("/history/trending", {
+                    params: { device_id: deviceId, limit },
+                });
+                if (Array.isArray(data) && data.length > 0) {
+                    offlineStore.saveTrending(data);
+                    return data;
+                }
+            } catch (err) {
+                console.warn("[HistoryAPI] Gagal mengambil trending dari server, gunakan data lokal:", err.message);
+            }
+        }
+
+        return localTrending;
     },
 };
 

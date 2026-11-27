@@ -22,9 +22,10 @@ export default function Detail() {
 
     const { data: article, loading, error, reload } = useAsync(async () => {
         const a = await ArticleAPI.get(id);
-        // Catat riwayat baca setiap berita dibuka (waktu bacanya diperbarui bila sudah pernah)
+        // Catat riwayat baca DAN naikkan read_count personal setiap kali artikel dibuka
+        // (berbeda dari views yang hanya dihitung 1x per sesi)
         HistoryAPI.record(deviceId, id).catch(() => { });
-        // Views bertambah otomatis, satu kali per sesi untuk tiap berita
+        // Views: hanya tambah 1x per sesi (tidak mempengaruhi trending lagi)
         const key = `viewed:${id}`;
         if (!sessionStorage.getItem(key)) {
             sessionStorage.setItem(key, "1");

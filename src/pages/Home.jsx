@@ -1,26 +1,48 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { ArticleAPI } from "../api/client";
+import { ArticleAPI, HistoryAPI } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
+import { useApp } from "../context/AppContext";
 import EditorialHero from "../components/EditorialHero";
 import { RowCard, TrendCard } from "../components/ArticleCard";
 import { Empty, ErrorBox, Loading } from "../components/States";
 import InstallButton from "../components/InstallButton";
 
 export default function Home() {
+    const { deviceId } = useApp();
+
     const { data, loading, error, reload } = useAsync(() => ArticleAPI.list({ limit: 40 }), []);
+
+    // Fetch personal trending — diurutkan dari yang paling sering dibaca user
+    const { data: trendingData } = useAsync(
+        () => HistoryAPI.trending(deviceId, 10),
+        [deviceId]
+    );
 
     const { showcase, trending, latest } = useMemo(() => {
         const all = Array.isArray(data) ? data : [];
         const byDate = [...all].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         const deck = byDate.slice(0, 4);
 
+        // Trending: gunakan data personal (read_count) jika ada.
+        // Jika user belum pernah membaca apapun (trendingData kosong), tampilkan artikel terbaru sebagai fallback.
+        let trendingList;
+        if (Array.isArray(trendingData) && trendingData.length > 0) {
+            // Sudah ada riwayat baca — urutkan dari yang paling sering dibaca
+            trendingList = [...trendingData]
+                .sort((a, b) => (b.read_count || 0) - (a.read_count || 0))
+                .slice(0, 6);
+        } else {
+            // Fallback: belum ada riwayat, tampilkan berita terbaru
+            trendingList = byDate.slice(0, 6);
+        }
+
         return {
             showcase: deck,
-            trending: [...all].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 6),
+            trending: trendingList,
             latest: byDate.slice(0, 8),
         };
-    }, [data]);
+    }, [data, trendingData]);
 
     const today = new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" });
 
@@ -47,8 +69,15 @@ export default function Home() {
                     <div id="konten" className="stack">
                         <section>
                             <h2 className="sec">Trending</h2>
+                            <p className="muted" style={{ fontSize: "0.78rem", marginBottom: "8px", marginTop: "-4px" }}>
+                                {Array.isArray(trendingData) && trendingData.length > 0
+                                    ? "Berdasarkan berita yang paling sering kamu baca"
+                                    : "Berita terbaru untuk kamu mulai"}
+                            </p>
                             <div className="hscroll">
-                                {trending.map((a, i) => <TrendCard key={a.id} a={a} rank={i + 1} />)}
+                                {trending.map((a, i) => (
+                                    <TrendCard key={a.id} a={a} rank={i + 1} />
+                                ))}
                             </div>
                         </section>
 

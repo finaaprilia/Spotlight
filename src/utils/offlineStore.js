@@ -8,6 +8,7 @@ const KEYS = {
     ARTICLES: "sp_offline_articles",
     BOOKMARKS: "sp_offline_bookmarks",
     HISTORY: "sp_offline_history",
+    READ_COUNTS: "sp_read_counts",
     QUEUE: "sp_offline_queue",
 };
 
@@ -218,11 +219,57 @@ class OfflineStore {
         const updated = [record, ...filtered];
         this.saveHistory(updated);
 
+        // Naikkan read_count lokal setiap kali artikel dibuka
+        this.incrementReadCount(article.id);
+
         this.enqueue({
             type: "RECORD_HISTORY",
             articleId: article.id,
             timestamp: Date.now(),
         });
+    }
+
+    // ==================== READ COUNT (PERSONAL TRENDING) ====================
+    getReadCounts() {
+        return read(KEYS.READ_COUNTS, {});
+    }
+
+    incrementReadCount(articleId) {
+        if (!articleId) return;
+        const counts = this.getReadCounts();
+        counts[articleId] = (counts[articleId] || 0) + 1;
+        write(KEYS.READ_COUNTS, counts);
+    }
+
+    getReadCount(articleId) {
+        const counts = this.getReadCounts();
+        return counts[articleId] || 0;
+    }
+
+    // Ambil top-N artikel diurutkan berdasarkan read_count lokal, mengambil data artikel dari store
+    getLocalTrending(limit = 10) {
+        const counts = this.getReadCounts();
+        const articlesMap = read(KEYS.ARTICLES, {});
+
+        return Object.entries(counts)
+            .filter(([id]) => articlesMap[id])
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, limit)
+            .map(([id, count]) => ({ ...articlesMap[id], read_count: count }));
+    }
+
+    // Simpan data trending dari server (merge read_count ke dalam artikel)
+    saveTrending(list) {
+        if (!Array.isArray(list)) return;
+        const counts = this.getReadCounts();
+        list.forEach((item) => {
+            if (item.id && item.read_count) {
+                // Ambil nilai tertinggi antara lokal dan server
+                counts[item.id] = Math.max(counts[item.id] || 0, item.read_count);
+            }
+        });
+        write(KEYS.READ_COUNTS, counts);
+        this.saveArticles(list);
     }
 
     removeHistory(articleId) {
