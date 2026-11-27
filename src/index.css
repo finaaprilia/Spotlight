@@ -51,11 +51,15 @@ body,
   margin: 0;
   min-height: 100%;
   background: var(--bg);
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
   font-size: 16px;
   line-height: 1.45;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 h1,
@@ -110,6 +114,9 @@ img {
 .app {
   min-height: 100dvh;
   position: relative;
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
 }
 
 .page {
@@ -117,6 +124,10 @@ img {
   display: flex;
   flex-direction: column;
   gap: 22px;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .stack {
@@ -879,6 +890,8 @@ img {
   margin: 0 -20px;
   padding: 0 20px;
   scrollbar-width: none;
+  max-width: calc(100% + 40px);
+  -webkit-overflow-scrolling: touch;
 }
 
 .chips::-webkit-scrollbar {
@@ -960,10 +973,11 @@ img {
 /* Navigasi gelembung (mobile) */
 .bubble-nav {
   position: fixed;
-  z-index: 999;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
+  z-index: 9999;
+  left: 50%;
+  transform: translateX(-50%) translateZ(0);
+  -webkit-transform: translateX(-50%) translateZ(0);
+  will-change: transform;
   bottom: max(20px, calc(16px + env(safe-area-inset-bottom, 0px)));
   width: min(calc(100% - 32px), 400px);
   display: flex;
@@ -977,6 +991,9 @@ img {
   border: 1px solid var(--glass-line);
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), inset 0 1.5px 1px rgba(255, 255, 255, .35);
   pointer-events: auto;
+  touch-action: pan-y;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .bubble-nav::before {
@@ -2354,11 +2371,32 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-top: 40px;
   padding: 24px 0 16px;
   border-top: 1px solid var(--line);
   user-select: none;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .pagination {
+    gap: 8px;
+  }
+  .pagination-btn {
+    padding: 7px 12px;
+    font-size: 0.82rem;
+  }
+  .pagination-pages {
+    gap: 6px;
+  }
+  .pagination-num {
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+  }
 }
 
 .pagination-btn {
