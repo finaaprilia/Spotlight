@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { BookmarkAPI } from "../api/client";
+import { ArticleAPI, BookmarkAPI, SyncAPI } from "../api/client";
+import { offlineStore } from "../utils/offlineStore";
 
 const Ctx = createContext(null);
 export const useApp = () => useContext(Ctx);
@@ -33,8 +34,8 @@ export function AppProvider({ children }) {
     const [deviceId] = useState(getDeviceId);
     const [dark, setDark] = useState(() => read("sp_dark", matchMedia("(prefers-color-scheme: dark)").matches));
     const [onboarded, setOnboardedState] = useState(() => read("sp_onboarded", false));
-    const [bookmarks, setBookmarks] = useState([]);
-    const [bookmarksReady, setBookmarksReady] = useState(false);
+    const [bookmarks, setBookmarks] = useState(() => offlineStore.getBookmarks());
+    const [bookmarksReady, setBookmarksReady] = useState(true);
     const [customFolders, setCustomFolders] = useState(() => read("sp_bookmark_folders", []));
     const [articleFolderMap, setArticleFolderMap] = useState(() => read("sp_article_folders", {}));
     const [toastMsg, setToastMsg] = useState("");
@@ -63,14 +64,43 @@ export function AppProvider({ children }) {
     const refreshBookmarks = useCallback(
         () =>
             BookmarkAPI.list(deviceId)
-                .then(setBookmarks)
+                .then((data) => {
+                    if (Array.isArray(data)) {
+                        setBookmarks(data);
+                        offlineStore.saveBookmarks(data);
+                    }
+                })
                 .catch(() => { })
                 .finally(() => setBookmarksReady(true)),
         [deviceId]
     );
+
+    // Sinkronisasi data offline saat online dan prefetch artikel
     useEffect(() => {
-        refreshBookmarks();
-    }, [refreshBookmarks]);
+        const handleOnline = async () => {
+            console.log("[AppProvider] 🌐 Terhubung kembali ke internet. Melakukan sinkronisasi data...");
+            try {
+                const count = await SyncAPI.sync(deviceId);
+                if (count > 0) {
+                    toast(`Sinkronisasi selesai: ${count} perubahan offline berhasil disimpan ke server`);
+                }
+                refreshBookmarks();
+                // Prefetch artikel terbaru agar offline store selalu lengkap
+                ArticleAPI.list({ limit: 100 }, { bypassCache: true }).catch(() => { });
+            } catch (e) {
+                console.warn("[AppProvider] Gagal sinkronisasi:", e);
+            }
+        };
+
+        window.addEventListener("online", handleOnline);
+
+        // Jika saat ini online, sinkronkan antrean dan prefetch artikel
+        if (navigator.onLine) {
+            handleOnline();
+        }
+
+        return () => window.removeEventListener("online", handleOnline);
+    }, [deviceId, refreshBookmarks, toast]);
 
     const isBookmarked = (id) => bookmarks.some((b) => b.id === id);
 
@@ -124,10 +154,13 @@ export function AppProvider({ children }) {
     );
 
     const toggleBookmark = async (article, targetFolder) => {
+        if (!article || !article.id) return false;
         try {
             if (isBookmarked(article.id) && !targetFolder) {
-                await BookmarkAPI.remove(deviceId, article.id);
                 setBookmarks((l) => l.filter((b) => b.id !== article.id));
+                offlineStore.removeBookmark(article.id);
+                BookmarkAPI.remove(deviceId, article.id).catch(() => { });
+
                 const nextMap = { ...articleFolderMap };
                 delete nextMap[article.id];
                 setArticleFolderMap(nextMap);
@@ -136,8 +169,9 @@ export function AppProvider({ children }) {
                 return false;
             } else {
                 if (!isBookmarked(article.id)) {
-                    await BookmarkAPI.add(deviceId, article.id);
                     setBookmarks((l) => [article, ...l]);
+                    offlineStore.addBookmark(article);
+                    BookmarkAPI.add(deviceId, article.id).catch(() => { });
                 }
                 if (targetFolder) {
                     const nextMap = { ...articleFolderMap, [article.id]: targetFolder };
@@ -150,7 +184,7 @@ export function AppProvider({ children }) {
                 return true;
             }
         } catch (e) {
-            toast(e.message);
+            toast(e.message || "Gagal mengubah bookmark");
             return false;
         }
     };
@@ -159,8 +193,11 @@ export function AppProvider({ children }) {
     const removeBookmarks = async (ids) => {
         if (!ids.length) return true;
         try {
-            await Promise.all(ids.map((id) => BookmarkAPI.remove(deviceId, id)));
             setBookmarks((l) => l.filter((b) => !ids.includes(b.id)));
+            ids.forEach((id) => {
+                offlineStore.removeBookmark(id);
+                BookmarkAPI.remove(deviceId, id).catch(() => { });
+            });
             const nextMap = { ...articleFolderMap };
             ids.forEach((id) => delete nextMap[id]);
             setArticleFolderMap(nextMap);
@@ -176,8 +213,9 @@ export function AppProvider({ children }) {
 
     const clearBookmarks = async () => {
         try {
-            await BookmarkAPI.clear(deviceId);
             setBookmarks([]);
+            offlineStore.clearBookmarks();
+            BookmarkAPI.clear(deviceId).catch(() => { });
             setArticleFolderMap({});
             write("sp_article_folders", {});
             toast("Semua bookmark dihapus");

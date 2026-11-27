@@ -96,7 +96,7 @@ export default function EditorialHero({ stories = [] }) {
                         </div>
                     </div>
 
-                    <span className="editorial-big-text right" aria-hidden="true">PDATES</span>
+                    <span className="editorial-big-text right" aria-hidden="true">UPDATE</span>
                 </div>
 
                 {/* Deskripsi & Tagline Bawah */}

@@ -37,17 +37,17 @@ export default defineConfig({
             options: {
               cacheName: "spotlight-api",
               networkTimeoutSeconds: 5,
-              expiration: { maxEntries: 60, maxAgeSeconds: 86400 },
+              expiration: { maxEntries: 100, maxAgeSeconds: 86400 * 7 },
             },
           },
           {
-            // Foto berita yang diunggah ke Supabase Storage, tetap tampil saat offline
-            urlPattern: /\/storage\/v1\/object\/public\/article-images\//,
+            // Foto berita: Supabase Storage, Unsplash, atau ekstensi gambar lainnya tetap tampil saat offline
+            urlPattern: /.*(?:storage\/v1\/object\/public|images\.unsplash\.com|\.(?:png|jpg|jpeg|svg|webp|gif)).*/i,
             handler: "CacheFirst",
             options: {
               cacheName: "spotlight-photos",
               cacheableResponse: { statuses: [0, 200] },
-              expiration: { maxEntries: 100, maxAgeSeconds: 2592000 },
+              expiration: { maxEntries: 200, maxAgeSeconds: 2592000 },
             },
           },
         ],

@@ -206,6 +206,11 @@ img {
   font-weight: 600;
 }
 
+.offline-bar.online-sync {
+  background: #10B981;
+  color: #FFFFFF;
+}
+
 /* Tombol */
 .btn {
   display: inline-flex;

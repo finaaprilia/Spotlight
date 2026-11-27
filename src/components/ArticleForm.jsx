@@ -31,8 +31,18 @@ export default function ArticleForm({ open, article, onClose, onSaved }) {
         setUploading(true);
         try {
             const dataUrl = await compressImage(file);
-            const { url } = await UploadAPI.image(dataUrl);
-            setForm((f) => ({ ...f, image_url: url }));
+            if (!navigator.onLine) {
+                // Saat offline: gunakan langsung foto hasil kompresi data URL
+                setForm((f) => ({ ...f, image_url: dataUrl }));
+            } else {
+                try {
+                    const { url } = await UploadAPI.image(dataUrl);
+                    setForm((f) => ({ ...f, image_url: url }));
+                } catch {
+                    // Fallback jika unggah server gagal
+                    setForm((f) => ({ ...f, image_url: dataUrl }));
+                }
+            }
         } catch (err) {
             setError(err.message);
         } finally {
